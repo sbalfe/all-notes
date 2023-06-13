@@ -12,4 +12,5 @@
 - [ ] Sort out `~/dev/web` node.js folder, filter out code that is useful only.
 - [ ] Find out where netcode project is for `c#` unity dev.
 - [ ] in `dev` sort out the old udemy tutorial folders to filter out any important notes or information gained.
-- [ ] 
+- [ ] Sort out reacdev code files, only moved the notes as of now as large file size but make sure to figure out a way to get the code also by clearing space or whatnot.
+- [ ] sort out typerscript folder
