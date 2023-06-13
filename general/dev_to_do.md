@@ -1,0 +1,15 @@
+- [ ] Configure boost asio javid playground to use the correct include folders within the cmake txt file.
+- [ ] Edit `~/dev/cpp/misc/win_api` to be setup correctly for when we are on windows + convert to Linux potentially.
+- [ ] Consider looking at chilli hugs tutorial for `~/dev/cpp/graphics`. Ignored the files in the windows directory.
+- [ ] Fix the layout of `~/dev/cpp/projects/boost-client-server-chat` such that it actually runs.
+- [ ] sort out `~/dev/cpp/misc/random/test_dll`.
+- [ ] sort out `~/dev/cpp/misc/graphics/sfml/rpg` so that sfml and imgui are working properly. Basically just edit the cmake file.
+- [ ] Fix `/home/shriller44/dev/cpp/misc/graphics/sdl/test-game` such that it compiles and runs properly.
+- [ ] Fix `/home/shriller44/dev/cpp/projects/voxel-vegetation-engine` to not kill itself.
+- [ ] Go over all code sections to check the cmake is configured properly.
+- [ ] In c `notes` to` books` add the pointers and memory management book.
+- [ ] sort out `dev` `java` to make sure it all works the `projects` bit in particular.
+- [ ] Sort out `~/dev/web` node.js folder, filter out code that is useful only.
+- [ ] Find out where netcode project is for `c#` unity dev.
+- [ ] in `dev` sort out the old udemy tutorial folders to filter out any important notes or information gained.
+- [ ] 

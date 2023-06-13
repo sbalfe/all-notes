@@ -1,0 +1,25 @@
+# specify base image, base image is a lightweight alpine node version with
+# less base packages.
+
+FROM node:alpine
+
+# when the container is started, this is where the working directory will start off as
+# includes any exec commands
+WORKDIR /usr/app
+
+# copy takes our contexts ./ directory and places into the containers /usr/app container.
+# avoids the issue of names being the same as you may have another lib folder for example
+# here we copy only package.json as this its all thats required for npm install to work properly.
+# this just changes only when package.json file changes basically.
+COPY ./package.json ./
+
+# install deps in that directory, runs if any command before changes.
+
+RUN npm install
+
+#copy the rest of the contents of the directory to the current working directory , ./ /usr/app in this case.
+COPY ./ ./ 
+
+# default command to run after installing the deps.
+
+CMD ["npm", "start"]

@@ -1,0 +1,21 @@
+FROM node:alpine
+
+# defualt > docker node image includes non root node user , here we are selecting this user for the proceeding commands
+USER node
+
+# make the directories alongside the parente directories. 
+RUN mkdir -p /home/node/app
+
+# set our current WorkDir to be this file in the container, prevents perms issue as 
+# WORKDIR by default creates a dir if it does not exist and set ownership to root
+WORKDIR /home/node/app
+
+# inline chown set ownership of ifles copying from local env to node user in container 
+COPY --chown=node:node ./package.json ./
+
+RUN npm install
+
+# not required when using volumes but useful when not using docker compose.
+COPY --chown=node:node ./ ./
+
+CMD ["npm" ,"run", "start"]

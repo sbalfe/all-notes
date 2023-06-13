@@ -1,0 +1,3 @@
+- templating allows us to define a preset 'pattern' for a webpage, that we can dynamically modify with
+- Example define a single search template that displays all the results for a given search term we dont know what the term
+- is or how many results there are ahead of time

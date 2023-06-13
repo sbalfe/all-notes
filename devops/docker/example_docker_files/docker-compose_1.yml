@@ -1,0 +1,13 @@
+version: '3' # version of docker compose
+
+# services are types of containers such as our redis and node app 
+services:
+    redis-server:
+        image: 'redis'
+    node-app:
+        restart: always # always attempt to restart after the container stops
+        # directory to build this in, same file as the docker compose file.
+        build: .
+        ports:
+            # dash is an array , mapping our port 4001 to node-app container 8081
+            - "4001:8081"

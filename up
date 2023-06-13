@@ -1,0 +1,5 @@
+#!/usr/bin/zsh
+
+git add .
+git commit -m "basic update"
+git push
