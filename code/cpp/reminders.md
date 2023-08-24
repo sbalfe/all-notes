@@ -1568,3 +1568,7 @@ https://stackoverflow.com/questions/22562187/what-is-the-purpose-of-rvalue-refer
 ###### naming conventions for classes
 
 ![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20221206163031624.png)
+
+###### types of scope
+
+https://learn.microsoft.com/en-us/cpp/cpp/scope-visual-cpp?view=msvc-170
