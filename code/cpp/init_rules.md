@@ -300,3 +300,5 @@ int main(){
 ![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20221019191723548.png)
 
 https://en.cppreference.com/w/c/language/initialization
+
+https://en.cppreference.com/w/cpp/language/list_initialization
