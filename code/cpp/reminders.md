@@ -73,6 +73,7 @@ https://www.cplusplus.com/reference/ios/fixed/
 ###### Purpose of virtual functions
 
 https://stackoverflow.com/questions/2391679/why-do-we-need-virtual-functions-in-c
+what the fuck are youidi
 
 ###### Protected vs Private 
 
