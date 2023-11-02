@@ -20,7 +20,7 @@
 
 - There is a often a limit on the size of total cookies therefore sessions must be put to use. 
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20210123155711885.png)
+![image](/images/image-20210123155711885.png)
 
 - Often a cookie to store each session id value for the user
 
