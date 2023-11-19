@@ -2,11 +2,11 @@
 
 - Understand `auto` for template type deduction
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220821154013180.png)
+![image](../../../../images/image-20220821154013180.png)
 
 - Call looks like:
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220821154023930.png)
+![image](../../../../images/image-20220821154023930.png)
 
 - Use `expr` to deduce **two types**:
   1. one for `T` 

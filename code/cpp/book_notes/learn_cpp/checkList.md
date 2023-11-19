@@ -95,7 +95,7 @@ int main()
 
 - Key point $\to$ variables destroyed in *opposite order* as the function exits.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220413154834648.png)
+![image](../../../../images/image-20220413154834648.png)
 
 ![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220413154902158.png)
 
