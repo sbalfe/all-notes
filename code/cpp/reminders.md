@@ -261,7 +261,7 @@ https://stackoverflow.com/questions/4437527/why-do-we-use-volatile-keyword
 
  returning a value defined in the calling function stack frame is not defined but rather moved directly into the address
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220518221613358.png)
+![image](../../images/image-20220518221613358.png)
 
  ```c++
  std::string f(){
