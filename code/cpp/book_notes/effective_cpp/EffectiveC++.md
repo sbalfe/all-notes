@@ -295,7 +295,7 @@ char *pc = &cctb[0]; // call const operator[] to get a pointer to cctbs data.
 
 ### Avoid duplication in const and non const member functions
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220225205835069.png)
+![image](images/image-20220225205835069.png)
 
 - Find a way to do the same operations on these const / non const operations and use the **same return value** with **no double calls**
 - Having a **non const** value call a *function* that is *const* is fine if we
@@ -705,11 +705,11 @@ a[i] = a[j]; /* potential self assignment */
 > - Never call copy constructor in copy assignment method, vice versa.
 > - To reduce duplication use `init` in copy assignment / copy constructor.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220227213439273.png)
+![image](images/image-20220227213439273.png)
 
 - Copy the base class customer by passing values from derived to base.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220227214752856.png)
+![image](images/image-20220227214752856.png)
 
 ## Item 13 - Use Objects to manage resources
 
@@ -830,7 +830,7 @@ processWidget(new Widget, priority());
 
 ## Item 18 - Make interfaces easy to use correctly and hard to use incorrectly.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220324212559628.png)
+![image](images/image-20220324212559628.png)
 
 > - Make the interface cause a **compiler error** if *not used as intended*.
 >
@@ -1168,7 +1168,7 @@ const Rational operator*(const Rational& lhs,
 
 ## Item 25 - Consider support for a non throwing $swap$ 
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220325203342502.png)
+![image](../../../..//images/image-20220325203342502.png)
 
 - How to **write a swap function** for *our own class*.
 - This is *especially* useful when **default swap behaviour** is **too heavy for your class**.
@@ -1567,7 +1567,7 @@ int main() {
 
 - Prints
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220326170659898.png)
+![image](../../../../images/image-20220326170659898.png)
 
 - Another example is if you **return** an **internal pointer** to the *caller*
   - May *outlive* the **life of your object** and the pointer becomes a **dangling pointer**
@@ -1578,7 +1578,7 @@ int main() {
 
 ## Item 29 - Strive for exception safety within code.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220328190039464.png)
+![image](../../../../images/image-20220328190039464.png)
 
 - Class *representing* *GUIs* for **menus** with **background images**
 - The *class* is *designed* to be used **in a threaded environment**, therefore contains a *mutex* for **concurrency control**.
@@ -1835,7 +1835,7 @@ inline const T& std::max(constT& a const T& b){ // explicit inline, request std:
 >
 >   - ```c++
 >    #include "datefwd.h" // header file declaring (but not defining) class Date
->                                 
+>                                         
 >     Date today(); // as before.
 >      void clearAppointments(Date d);
 >     ```
@@ -2132,11 +2132,11 @@ User::~User = default;
 
 ## Item 36 - Never redefine inherited non virtual function
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727214259425.png)
+![image](../../../../images/image-20220727214259425.png)
 
 - Derived class that inherits a member function can create a function with the same name and this shadows the name above it.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727204813741.png)
+![image](images/image-20220727204813741.png)
 
 - Virtual functions are **dynamically bound** $\to$ they do **not suffer** from this problem
 - If $mf$ were a **virtual function**  $\to$ call to $mf$ through pB / pD invokes `D::mf` as they both point to an **object of type D**.
@@ -2170,7 +2170,7 @@ D *pD = &x;
 
 ## Item 37 - Never redefine a functions inherited default parameter value
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727223828213.png)
+![image](images/image-20220727223828213.png)
 
 - Only refer to virtual functions as you never redefine a non virtual function.
 - Virtual functions are **dynamically bound** but **default values** are *statically bound*.
@@ -2179,21 +2179,21 @@ D *pD = &x;
 
 - A *static type* is the **type** declared in the **program text**
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727214953654.png)
+![image](images/image-20220727214953654.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727215000399.png)
+![image](images/image-20220727215000399.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727215033851.png)
+![image](images/image-20220727215033851.png)
 
 - The **dynamic type** is the value that the **pointer** actually holds whereas the **static type** is $Shape$ always.
 - Dynamic type determines the **behaviour**. 
 - This static binding of **default parameters** means using a **derived function** but with **default parameters** from the **base class** potentially.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727221616768.png)
+![image](images/image-20220727221616768.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727221621118.png)
+![image](images/image-20220727221621118.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727221625334.png)
+![image](images/image-20220727221625334.png)
 
 - References would **not change this issue**.
 
@@ -2205,9 +2205,9 @@ D *pD = &x;
 
 - Offering default parameter values for both base/derived classes.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727222957302.png)
+![image](images/image-20220727222957302.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727223003622.png)
+![image](images/image-20220727223003622.png)
 
 - This is **a code duplication** that comes with **dependencies** $\to$ change shape value , change all.
 
@@ -2215,7 +2215,7 @@ D *pD = &x;
 
 - Consider alternatives design such as the **non virtual interface idiom**
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220727223425750.png)
+![image](images/image-20220727223425750.png)
 
 - non virtual functions **should not be redefined by derived by derived classes** $\to$ this design makes it clear that default value for draws **color parameter** should *always be red*.
 

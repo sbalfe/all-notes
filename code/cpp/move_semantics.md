@@ -37,15 +37,15 @@ int main(){
 
 ```
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20221013141601456.png)
+![image](../../images/image-20221013141601456.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20221013141938210.png)
+![image](images/image-20221013141938210.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20221013142126186.png)
+![image](images/image-20221013142126186.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20221013142831904.png)
+![image](images/image-20221013142831904.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20221013144154022.png)
+![image](images/image-20221013144154022.png)
 
 ```C++
 #include <iostream>
