@@ -1835,7 +1835,7 @@ inline const T& std::max(constT& a const T& b){ // explicit inline, request std:
 >
 >   - ```c++
 >    #include "datefwd.h" // header file declaring (but not defining) class Date
->                                         
+>                                             
 >     Date today(); // as before.
 >      void clearAppointments(Date d);
 >     ```
@@ -2036,7 +2036,7 @@ User::~User = default;
 
 ### Template method pattern via non virtual interface idiom.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220725171506439.png)
+![image](../../../.images/image-20220725171506439.png)
 
 - public function calling private virtual function.
 - This is the **non virtual interface idiom**.

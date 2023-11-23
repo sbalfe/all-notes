@@ -3367,7 +3367,7 @@ int main()
 
 ###### references and referents have *independent lifetimes*
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220414054055936.png)
+![image](images/image-20220414054055936.png)
 
 ```c++
 #include <iostream>
@@ -3422,9 +3422,9 @@ int main()
 
 
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220414054601649.png)
+![image](../../../../images/image-20220414054601649.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220414054554515.png)
+![image](images/image-20220414054554515.png)
 
 ```c++
 #include <iostream>
@@ -3458,11 +3458,11 @@ int main()
 
 ###### passing by l value
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220414054920242.png)
+![image](images/image-20220414054920242.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220414054928131.png)
+![image](images/image-20220414054928131.png)
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220414054934511.png)
+![image](images/image-20220414054934511.png)
 
 ```c++
 #include <iostream>
@@ -3523,7 +3523,7 @@ int main()
 
 ###### References vs pointers
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220414055202991.png)
+![image](images/image-20220414055202991.png)
 
 ###### null pointers
 

@@ -4,15 +4,21 @@
 >
 > - Review POD types, class layouts as defined in the [Class section.](#Classes, OOP, ...)
 > - Review how type traits are implemented for a variety of examples. Notably review the Cppcon video.
-> - Review The containers in the standard library, from a performance and use case perspective
->   - Notably review the erase remove idiom.
-> - Understand vector and string class under the h
+> - Review The containers in the standard library, from a performance and use case perspective ==IMPORTANT==
+>   - Ranges, iterators, algorithms, containers ...
+> - Understand C++20 modules ==IMPORTANT==
+> - Review The standard library as a whole looking at useful features ==IMPORTANT== 
+> - Understand vector and string class under the hood - create your own maybe.
 > - Understand Placement new
-> - Start collating a better understanding of template metaprogramming.
+> - Understand bit manipulation from learncpp or elsewhere and why its useful ==IMPORTANT==.
+> - Start collating a better understanding of template metaprogramming. ==IMPORTANT==
+>   - Concepts, CRTP
 >   - https://www.vishalchovatiya.com/variadic-template-cpp-implementing-unsophisticated-tuple/
-> - Review auto rules.
-> - Summarise auto deduction rules
+> - Review & summarise auto rules. ==IMPORTANT==
 > - Templates ... operator.
+> - Clean up typing section ==IMPORTANT== 
+> - Merge learncpp stuff on log slide into here - **not important but good**, notable topics to review
+>   - Bit manipulation
 > - Cppcon
 >   - [Memory Allocators](https://www.youtube.com/watch?v=nZNd5FjSquk&t=538s)
 >   - [Type Erasure](https://www.youtube.com/watch?v=tbUCHifyT24)
@@ -74,7 +80,7 @@ int main(){
 
 ##### cpp-core-guidelines
 
-- [Prefer initialization to assignment in constructors](https://accu.org/journals/overload/25/139/brand_2379/)
+- [C.49 Prefer initialization to assignment in constructors](C.49: Prefer initialization to assignment in constructors)
 
   - ```cpp
     class A {   // Good
@@ -85,7 +91,7 @@ int main(){
     };
     ```
 
-- [Prefer the `{}` syntax for initialisation](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es23-prefer-the--initializer-syntax)
+- [ES.23 Prefer the `{}` syntax for initialisation](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es23-prefer-the--initializer-syntax)
 
   - use `=` for 
 
@@ -174,6 +180,7 @@ int main(){
     // Special case of list initialization for arrays or simple structs (all-members-public, no user-provided constructors).
     T object = {arg1, arg2, ...};   // For arrays or simple structs
     T object{arg1, arg2, ...};      // For arrays or simple structs
+    T object {.member_name = arg1} // c++ 20 designate initalize  - https://en.cppreference.com/w/cpp/language/aggregate_initialization#Designated_initializers
     
     // Reference Initialization
     // Used to initialize references. References can be bound to temporaries with extended lifetime except in specific cases (e.g., returning references to local variables).
@@ -192,6 +199,8 @@ int main(){
 ##### Copy & Move Elision
 
 > cpp con talk - https://www.youtube.com/watch?v=IZbL-RGr_mk
+>
+> [What is copy elision and RVO](https://stackoverflow.com/questions/12953127/what-are-copy-elision-and-return-value-optimization/12953145#12953145)
 
 - Compiler may generate some code. The compiler has the ability to elide copies that are not actually required. 
 - Returning a value defined in the calling function stack frame is not defined but rather moved directly into the address.
@@ -218,7 +227,92 @@ void g(){
 
   - both are the same elided result which skips the copy or move step into the returned value address passed in under the hood 
 
+- **Summary of copy elision**
+
+  - [Guaranteed copy elision](https://stackoverflow.com/questions/38043319/how-does-guaranteed-copy-elision-work) - modern.
+
+    - [more details](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0135r0.html)
+    - C++17 makes a pr value materialized only when required, then its constructed directly into the storage of its final destination. This means it may look like the syntax is copying and moving but no copy or move is actually performed. This is not really copy elision per se, its built into the language construct itself now, we dont need to define move or copy constructors like before.
+	
+  - RVO
+  
+      - NRVO (named return value optimisation) - This is where a value named in the function that has automatic duration is returned and the copy / move is elided.
+  
+        > in a [return statement](https://en.cppreference.com/w/cpp/language/return), when the operand is the name of a non-volatile object with automatic  storage duration, which isn't a function parameter or a catch clause  parameter, and which is of the same class type (ignoring [cv-qualification](https://en.cppreference.com/w/cpp/language/cv)) as the function return type. This variant of copy elision is known as NRVO, "named return value optimization."
+  
+      - URVO (unnamed return value optimisation) - This is the same as NRVO apart from the fact there was no name i.e there was no original 
+  
+        ```cpp
+        struct Type {
+        	Type() : x{ 0 } { std::print("default constructor"); }
+        	Type(int val) : x{ val } { std::print("int constructor\n");}
+        	Type(const Type& obj) : x{ obj.x } { std::print("copy construct\n"); }
+        	Type(Type&& obj) noexcept : x{obj.x} { std::print("move construct\n"); }
+        	int x;
+        };
+        
+        Type NVRO() {
+        	Type inner_var{ 2 };
+        	return inner_var;
+        }
+        
+        Type UVRO() {
+        	return Type{ 2 };
+        	//return { 2 }; same as the above unnamed
+        }
+        
+        int main() {
+        	Type t{ UVRO() };
+        	std::print("value: {}", t.x);
+        }
+        ```
+  
+  - This links to the bit on https://en.cppreference.com/w/cpp/language/copy_elision that discusses this fact with the following basic example:
+  
+    ```cpp
+    T x = T(T(f())); // x is initialized by the result of f() directly; no move
+    // If f were a direct call to T() that would also be elided 
+    ```
+  
+    - Noting that in some cases **elision cannot apply**
+  
+    ```cpp
+    struct C { /* ... */ };
+    C f();
+     
+    struct D;
+    D g();
+     
+    struct D : C
+    {
+        D() : C(f()) {}    // no elision when initializing a base-class subobject
+        D(int) : D(g()) {} // no elision because the D object being initialized might
+                           // be a base-class subobject of some other class
+    };
+    ```
+  
+    ```cpp
+    struct Type {
+    
+    	Type() : x{ 0 } { std::print("default constructor"); }
+    	explicit Type(int val) : x{ val } { std::print("int constructor\n");}
+    	Type(const Type& obj) : x{ obj.x } { std::print("copy construct\n"); }
+    	Type(Type&& obj) noexcept : x{obj.x} { std::print("move construct\n"); }
+    
+    	int x;
+    };
+    
+    int main() {
+    	Type t{ Type{2}}; // The construction of Type {2} and the move of its temporary are both elided resulting in a construction of Type directly from an integer.
+    	std::print("value: {}", t.x);
+    }
+    ```
+  
+    - This extends to be anything is elided to directly replace the arguments initializing the r-value type, this is what C++17 idea of *deferred*
+
 ##### Misc reminders:
+
+- [Five advanced init techniques in C++](https://www.cppstories.com/2023/five-adv-init-techniques-cpp/)
 
 - [Statics initialisation order](https://stackoverflow.com/questions/211237/static-variables-initialisation-order)
 
@@ -249,9 +343,68 @@ void g(){
 
 - [Copy list init vs direct list init](https://stackoverflow.com/questions/50422129/differences-between-direct-list-initialization-and-copy-list-initialization)
 
+  - Copy list init , as via the rules of function overload resolution fails to compile when `explicit` is used for the constructor of said type.
+
+  - C++17 Given some enumeration type you can not perform *copy-list-initalization* abut can *direct-list-initialisation*
+
+    - ```CPP
+      enum class Colour { RED, BLUE, YELLOW}
+      
+      Colour val = Colour::RED // errro
+      ```
+
+    - 
+
+
 ### Idioms
 
 > [C++ Idioms](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms)
+
+##### CRTP
+
+```cpp
+#include <cstdio>
+ 
+#ifndef __cpp_explicit_this_parameter // Traditional syntax
+ 
+template <class Derived>
+struct Base { void name() { (static_cast<Derived*>(this))->impl(); } };
+struct D1 : public Base<D1> { void impl() { std::puts("D1::impl()"); } };
+struct D2 : public Base<D2> { void impl() { std::puts("D2::impl()"); } };
+ 
+void test()
+{
+    // Base<D1> b1; b1.name(); //undefined behavior
+    // Base<D2> b2; b2.name(); //undefined behavior
+    D1 d1; d1.name();
+    D2 d2; d2.name();
+}
+ 
+#else // C++23 alternative syntax; https://godbolt.org/z/s1o6qTMnP
+ 
+struct Base { void name(this auto&& self) { self.impl(); } };
+struct D1 : public Base { void impl() { std::puts("D1::impl()"); } };
+struct D2 : public Base { void impl() { std::puts("D2::impl()"); } };
+ 
+void test()
+{
+    D1 d1; d1.name();
+    D2 d2; d2.name();
+}
+ 
+#endif
+ 
+int main()
+{
+    test();
+}
+```
+
+##### NVI
+
+- [Non virtual interface](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Non-Virtual_Interface)
+  - We basically have a *private method* in our *interface* which is a virtual method.
+  - This ensures our base class can control pre and post conditions regarding a derived classes implementation of said virtual function.
 
 ##### SFINAE
 
@@ -408,45 +561,10 @@ Output:
 - Conditional operator:
 
   - ```cpp
-    // The Conditional Operator in C++ (?:)
-    
-    // Basic Syntax: c ? x : y
-    // Evaluates x if c is true, otherwise evaluates y
-    
-    // Example: Replacing if-else statement
     int x = 10, y = 5;
     int greater = (x > y) ? x : y; // If x is greater than y, assign x to greater, else assign y
-    
-    // Using in Variable Initialization
-    constexpr bool inBigClassroom { false };
-    constexpr int classSize { inBigClassroom ? 30 : 20 }; // Ternary operator in initialization
-    
-    // Parenthesizing Conditional Operator
-    int z { 10 - (x > y ? x : y) }; // Parenthesized for clarity and correct evaluation
-    
-    // When to Parenthesize
-    // 1. Parenthesize the entire conditional operator in a compound expression
-    // 2. Parenthesize the condition if it contains operators (except function calls)
-    
-    // Examples of Parenthesizing
-    int a { (x > y) ? x : y };                  // Parenthesized condition
-    std::cout << (isAfternoon() ? "PM" : "AM"); // Condition is a function call, not parenthesized
-    
-    // Type Matching in Conditional Operator
-    constexpr int value{ 5 };
-    // std::cout << (value != 5 ? value : "value is 5"); // Error: Types do not match
-    
-    // Use Cases for Conditional Operator
-    // 1. Initializing an object with one of two values
-    // 2. Assigning one of two values to an object
-    // 3. Passing one of two values to a function
-    // 4. Returning one of two values from a function
-    // 5. Printing one of two values
-    
-    // Best Practice: Avoid in Complicated Expressions
-    // Complicated expressions with the conditional operator are error-prone and hard to
     ```
-
+  
 - Operating incrementing and decrementing:
 
   - ![image-20231120214752148](images/image-20231120214752148.png)
@@ -787,7 +905,33 @@ Output:
 
 - **Always favour references to pointers whenever possible.** (https://www.learncpp.com/cpp-tutorial/null-pointers/)
 
+##### cpp-core-guidelines
+
+- [F.42 Return A T* to indicate only a position](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#f42-return-a-t-to-indicate-a-position-only)
+  - Basically prefer a pointer if the position to return is not an ownership semantic and can be nullptr, otherwise prefer to use references always.
+
 ##### Misc reminders
+
+- When we return by `const` for a temporary. This is redundant if its not a reference. 
+
+  ```cpp
+  const int& func1() {
+  	int x{ 1 }; 
+  	return x;
+  }
+  
+  const int func2() {
+  	int x{ 1 }; 
+  	return x;
+  }
+  
+  
+  int main() {
+  
+  	int& val = func1(); // [error] cannot bind const int to int 
+      int val = func2(); // [ok] drops the const okay
+  }	
+  ```
 
 - Function pointer syntax:
 
@@ -938,6 +1082,31 @@ Output:
   - object returned by reference must exist after the function returns.
   - Return by *address* is returning a **pointer** and thus shares similar caveats.
     - Useful for if we wish to **return** a `nullptr`. 
+  
+- **Reference binding** - Reference binding is the process by which references are bound to some function or object
+
+- [learncpp - Reference binding rules](https://www.learncpp.com/cpp-tutorial/lvalue-references/)
+
+  ```cpp
+  int main(){
+      
+      // Rule 1 You cannot bind an r-value to a non const l-value reference. Reference binding rules state that l-value references must be bound to a modifiable lvalue, r-value references are constant and therefore this rule fails
+      
+      // Reason - r-values are non modifiable so the value of them can not be modified, its the semantics
+      int val = 3;
+      int& val = {std::move(val)} // illegal, you must bind a r-value reference to a const reference
+      const int& val = std::move(val); // okay, we can bind any r-value (xvalue or pr value) to a const;
+      
+      // Rule 2 References cannot be reaseated (changed to refer to another object)
+      int new_val = 4;
+      int other_val = 5;
+      int& val {new_val}; // okay val is now an alias for new_val
+      val = other_val; // This is okay but it does not alter the reference `val` to refer to `other_val` , it changes `new_val` to be 5.
+      
+      //Rule 3 References must be initialised at their declaration
+      int& ref; // [error] no value to initialise reference. 
+  }
+  ```
 
 ### Classes, OOP, ...
 
@@ -1005,8 +1174,13 @@ class X: public virtual T {};
 - [C.51: Use delegating constructors to represent common actions for all constructors of a class](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#c51-use-delegating-constructors-to-represent-common-actions-for-all-constructors-of-a-class)
 - [C.35: A base class destructor should be either public and virtual, or protected and non-virtual](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rc-dtor-virtual)
 - [C:127: A class with a virtual function should have a virtual or protected destructor](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#c127-a-class-with-a-virtual-function-should-have-a-virtual-or-protected-destructor)
+- [C.164: Avoid implicit conversion operators](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#c164-avoid-implicit-conversion-operators)
 
 ##### Learn-cpp misc
+
+- Inheritance access summary:
+
+  ![image-20231122191408901](images/image-20231122191408901.png)
 
 - [ref-qualifiers](https://www.learncpp.com/cpp-tutorial/ref-qualifiers/)
 
@@ -1110,6 +1284,9 @@ class X: public virtual T {};
         Employee e2{ "Dave", 42 };
     }
     ```
+
+- Make any constructor taking a single argument `explicit` 
+  - An exception is when the conversion is semantically equivalent and performant such as `std::string` to `std::string_view` 
 
 ##### Misc reminders
 
@@ -1536,11 +1713,52 @@ volatile int x = 5; // x may be changed somewhere else, prevent compiler optimiz
 
 - *Integer* refers to the `int` datatype, whereas *Integral* (https://en.cppreference.com/w/cpp/types/is_integral) is more broad and can include `bool` 
 
+- Avoid literals and static casts when dealing with type conversions:
+
+  ```cpp
+   // We can avoid literals with suffixes
+   unsigned int u{ 5 }; // okay (we don't need to use `5u`)
+   float f{ 1.5 };      // okay (we don't need to use `1.5f`)
+  
+   // We can avoid static_casts
+   constexpr int n{ 5 };
+   double d{ n };       // okay (we don't need a static_cast here)
+   short s{ 5 };        // okay (there is no suffix for short, we don't need a static_cast here)
+  
+   return 0;
+  ```
+
+- Signed integer:
+
+  - Overflow is **undefined behaviour** in C++ for signed integers
+
+    - ```cpp
+      #include <iostream>
+      
+      int main()
+      {
+          // assume 4 byte integers
+          int x { 2'147'483'647 }; // the maximum value of a 4-byte signed integer
+          std::cout << x << '\n';
+      
+          ++x; // integer overflow, undefined behavior
+          std::cout << x << '\n';
+      
+          return 0;
+      }
+      ```
+
+  - ![image-20231122193549116](images/image-20231122193549116.png)
+
+  - ![image-20231122193518341](images/image-20231122193518341.png)
+
+  - Be careful when using integer division, as you will lose any fractional  parts of the quotient. However, if it’s what you want, integer division  is safe to use, as the results are predictable.
+
 - [object-sizes-and-the-sizeof-operator](https://www.learncpp.com/cpp-tutorial/object-sizes-and-the-sizeof-operator/)
-  
+
   - ![image-20231120012922209](images/image-20231120012922209.png)
-  
-- Fixed width integers:
+
+- Fixed width integers (**prefer**):
 
   - ![image-20231120012953506](images/image-20231120012953506.png)
 
@@ -1578,14 +1796,14 @@ volatile int x = 5; // x may be changed somewhere else, prevent compiler optimiz
       ```
 
 - `std::uint8_t` and `std::int8_t` may behave like `char` on some systems which can be a cause of errors.
+
 - `std::size_t` is an unsigned integral type and typically represents the size or length of objects.
   - Some compilers limit the largest creatable object to half the maximum value `std::size_t` 
-- Signed integers limits:
-  - ![image-20231120210324347](images/image-20231120210324347.png)
 
 - A **cv unqualified** type has no const or volatile applied to it i.e its raw type.
 
 - **Literals**:
+
   - ![image-20231120213205828](images/image-20231120213205828.png)
   - ![image-20231120213125458](images/image-20231120213125458.png)
 
@@ -1640,13 +1858,171 @@ volatile int x = 5; // x may be changed somewhere else, prevent compiler optimiz
 
 - Promotions / Conversions 
 
-  - [Floating point and integral promotions](https://www.learncpp.com/cpp-tutorial/floating-point-and-integral-promotion/)
-
-  - Use `{}` to avoid narrowing conversions (loss of precision conversion)
-  - [Arithmetic Conversions](https://www.learncpp.com/cpp-tutorial/arithmetic-conversions/)
   - [Narrowing Conversions, List init and constexpr init](https://www.learncpp.com/cpp-tutorial/narrowing-conversions-list-initialization-and-constexpr-initializers/)
 
+- Narrowing conversions -> **compiler emits a warning normally**:
+
+  - Avoid by using `{}`, enforcing the **precision is important.**
+  - From a floating point type to an integral type.
+  - From a floating point type to a narrower or lesser ranked floating point type,  unless the value being converted is constexpr and is in range of the  destination type (even if the destination type doesn’t have the  precision to store all the significant digits of the number).
+  - From an integral to a floating point type, unless the value being converted  is constexpr and whose value can be stored exactly in the destination  type.
+  - From an integral type to another integral type that cannot represent all values of the original type, unless the value being  converted is constexpr and whose value can be stored exactly in the  destination type. This covers both wider to narrower integral  conversions, as well as integral sign conversions (signed to unsigned,  or vice-versa).
+  - **Because they can be unsafe and are a source of errors, avoid narrowing conversions whenever possible.**
+  - **If you need to perform a narrowing conversion, use `static_cast` to convert it into an explicit conversion.**
+
+- List initialization with constexpr initializers:
+
+  - These constexpr exception clauses are incredibly useful when list  initializing non-int/non-double objects, as we can use an int or double  literal (or a constexpr object) initialization value.
+
+    ```cpp
+    int main()
+    {
+        // We can avoid literals with suffixes
+        unsigned int u { 5 }; // okay (we don't need to use `5u`)
+        float f { 1.5 };      // okay (we don't need to use `1.5f`)
+    
+        // We can avoid static_casts
+        constexpr int n{ 5 };
+        double d { n };       // okay (we don't need a static_cast here)
+        short s { 5 };        // okay (there is no suffix for short, we don't need a static_cast here)
+    
+        return 0;
+    }
+    ```
+
+- **Integral promotion** rules and floating point promotion:
+
+  - floating point -> float goes to double.
+  - Using the **integral promotion** rules, the following conversions can be made:
+    - signed char or signed short can be converted to int.
+    - unsigned char, char8_t, and unsigned short can be converted to int if int can  hold the entire range of the type, or unsigned int otherwise.
+    - If char is signed by default, it follows the signed char conversion rules  above. If it is unsigned by default, it follows the unsigned char  conversion rules above.
+    - bool can be converted to int, with false becoming 0 and true becoming 1.
+
+- **Arithmetic conversion** rules:
+
+  - The usual arithmetic conversion rules are pretty simple. The compiler has a prioritized list of types that looks something like this:
+
+    - long double (highest)
+
+    - double
+
+    - float
+
+    - unsigned long long
+
+    - long long
+
+    - unsigned long
+
+    - long
+
+    - unsigned int
+
+    - int (lowest)
+
+      - **There are only two rules:**
+
+        - If the type of at least one of the operands is on the priority list, the  operand with lower priority is converted to the type of the operand with higher priority.
+
+        - Otherwise (the type of neither operand is on the list), both operands are numerically promoted (see [10.2 -- Floating-point and integral promotion](https://www.learncpp.com/cpp-tutorial/floating-point-and-integral-promotion/)).
+
+
+- Floating point - https://float.exposed/0x3dcccccd:
+
+  - ![image-20231122193000672](images/image-20231122193000672.png)
+
+  - ![image-20231122192929810](images/image-20231122192929810.png)
+
+  - Always make sure the type of your literals match the type of the  variables they’re being assigned to or used to initialize. Otherwise an  unnecessary conversion will result, possibly with a loss of precision.
+  - Floating point numbers are useful for **storing very large or very small numbers**, including those with fractional components.
+  - Floating point numbers often have small rounding errors, even when the number  has fewer significant digits than the precision. Many times these go  unnoticed because they are so small, and because the numbers are  truncated for output. However, comparisons of floating point numbers may not give the expected results. Performing mathematical operations on  these values will cause the rounding errors to grow larger.
+  - Favor double over float unless space is at a premium, as the lack of precision in a float will often lead to inaccuracies.
+
+- Unsigned integers
+
+  - More details - https://blog.libtorrent.org/2016/05/unsigned-integers/
+
+  - C++ standard says unsigned integers are well defined in overflowing from arithmetic or storage operations.
+
+  - Unsigned integers exhibit **wrap around behaviour** 
+
+    ```cpp
+    #include <iostream>
+    
+    int main()
+    {
+        unsigned short x{ 0 }; // smallest 2-byte unsigned value possible
+        std::cout << "x was: " << x << '\n';
+    
+        x = -1; // -1 is out of our range, so we get modulo wrap-around
+        std::cout << "x is now: " << x << '\n';
+    
+        x = -2; // -2 is out of our range, so we get modulo wrap-around
+        std::cout << "x is now: " << x << '\n';
+    
+        return 0;
+    }
+    
+    x was: 0
+    x is now: 65535
+    x is now: 65534
+    ```
+
+  - Favor signed numbers over unsigned numbers for holding quantities (even  quantities that should be non-negative) and mathematical operations.  
+
+  - Avoid mixing signed and unsigned numbers.
+
+    ![image-20231122193638575](images/image-20231122193638575.png)
+
 ##### Misc reminders
+
+- C++ types - https://en.cppreference.com/w/cpp/language/types
+
+- Prefer fixed width integers for most cases
+  - `std::uint8_t` for chars
+  - `std::size_t` for sizes i.e unsigned integer type dependent on the architecture
+  - Prefer larger unsigned integers for varying contexts
+- Do not mix signed and unsigned integers.
+- Prefer `int` for simple numbers
+
+- [LEARNCPP](https://www.learncpp.com/cpp-tutorial/constexpr-and-consteval-functions/) **Constexpr / Consteval**
+
+  - Unless you have a specific reason not to, a function that can be made `constexpr` generally should be made `constexpr`.
+
+  - Use `consteval` if you have a function that must run at compile-time for some reason (e.g. performance).
+
+    - ```cpp
+      #include <iostream>
+      
+      // Uses abbreviated function template (C++20) and `auto` return type to make this function work with any type of value
+      // See 'related content' box below for more info (you don't need to know how these work to use this function)
+      consteval auto compileTime(auto value)
+      {
+          return value;
+      }
+      
+      constexpr int greater(int x, int y) // function is constexpr
+      {
+          return (x > y ? x : y);
+      }
+      
+      int main()
+      {
+          std::cout << greater(5, 6) << '\n';              // may or may not execute at compile-time
+          std::cout << compileTime(greater(5, 6)) << '\n'; // will execute at compile-time
+      
+          int x { 5 };
+          std::cout << greater(x, 6) << '\n';              // we can still call the constexpr version at runtime if we wish
+      
+          return 0;
+      }
+      ```
+
+  - The compiler must be able to see the full definition of a constexpr or consteval function, not just a forward declaration.
+  - Constexpr/consteval functions used in a single source file (.cpp) can be defined in the source file above where they are used.
+  - Constexpr/consteval functions used in multiple source files should be defined in a header  file so they can be included into each source file.
+
 
 - [What are forward declarations in C++](https://stackoverflow.com/questions/4757565/what-are-forward-declarations-in-c)
 - [What is the purpose of forward declarations in C++](https://stackoverflow.com/questions/3110096/what-is-the-purpose-of-forward-declaration)
@@ -1946,8 +2322,50 @@ extern "C" {void f();}      // f() was compiled in C
     }
     ```
 
-
 ##### Misc reminders
+
+- Mental model of a function
+
+  ```cpp
+  int func (){
+      return 1;
+  }
+  
+  int& func2(){
+      int x {1};
+      return x;
+  }
+  
+  int* func3(){
+      int x {1};
+      return &x;
+  }
+  
+  // extremely rare and pretty much never used, this is used in std::forward and std::forward as a `cast` 
+  // to interpret the passed in lvalue as an expiring xvalue (std::move) but std::forward maintains the value category via reference collapsing based on the deduce return type (see c++11 modern cheatsheet for more information)
+  int&& func4(){
+      
+  }
+  
+  int main(){
+      func(); // func returns temporary, this is an r-value 1
+      
+      func2(); // this returns an alias for the internal variable x (note in our example x would be destroyed after this line)
+      
+      func3(); // this returns a temporary of int pointer type
+     
+  }
+  ```
+
+  - Key idea with functions is the `return` statement defines some entity, of which must be able to represented (underlying bits) in the return type without causing any issues
+    - dropping const / volatile qualifiers
+    - Losing precision 
+    - Just any general bad conversions
+  - When the function returns there are a few cases:
+    - Pointer > pointer temporary is returned
+    - Reference > ref alias is returned (maybe copied impl defined)
+    - Value > temporary value is returned (Copy elision [**see in initialisation section for more details**] can be detected in cases to avoid the temporary value being materialized, and used only at the point of where that temporary was destined to be stored)
+  - When you use the result of a function you are binding it to some other place such as constructor, assignment or function call, but the result of a function by itself is its own type, typically a temporary as explained above, but references being the nuance case.
 
 - [When to use inline functions](https://stackoverflow.com/questions/1932311/when-to-use-inline-function-and-when-not-to-use-it)
   
@@ -2110,13 +2528,14 @@ auto func = std::bind(&add, std::placeholders::_1, std::placeholders::_2, "test"
 - Randomization
   - ![image-20231120220826234](images/image-20231120220826234.png)
 
-#### I/O
+#### I/O & Strings
 
 - Basic file reading
 - [std::string_view](https://www.learncpp.com/cpp-tutorial/introduction-to-stdstring/)
   - does not own the object its looking at
   - does not allocate memory when assigned to a string literal so less memory intensive
   - prefer over `const std::string& `
+  - **[learncpp]** - **std::string_view** provides read-only access to an  existing string (a C-style string literal, a std::string, or a char  array) without making a copy. A `std::string_view` that is viewing a string that has been destroyed is sometimes called a **dangling** view. When a `std::string` is modified, all views into that `std::string` are **invalidated**, meaning those views are now invalid. Using an invalidated view (other than to revalidate it) will produce undefined behavior.
 
 
 ```cpp
@@ -2249,15 +2668,65 @@ for (int n = 0; n < 5; ++n) {
 - `std::begin` vs `std::vector::begin` - https://stackoverflow.com/questions/26290316/difference-between-vectorbegin-and-stdbegin
   - begin is basically the generic form, it would call begin on the vector if called on it, however it would deal with edge cases.
 
+- [Emplace back vs push back](https://stackoverflow.com/questions/4303513/push-back-vs-emplace-back)
+
+### Modern-CPP-Cheatsheet
+
 ### C++11
 
-### **C++14**
+##### C++ New language features
 
-### C++17
+###### Forwarding references
+
+- Also referred to as *universal references*. Created via the syntax with the syntax `T` where `T` is a template type parameter. Also created using `auto&&` (Which is conceptually the same rules as a `T` template typename parameter)
+- This enables perfact
+
+##### C++11 New Library features
+
+###### std::move
+
+- `std::move` indicates that the object passed to it may have  its resources transferred. Using objects that have been moved from  should be used with care, as they can be left in an unspecified state.
+
+- Definition:
+
+  ```cpp
+  // Simply casts the value moved in to a r value reference via removing the reference (if present) then returning that
+  template <typename T> typename remove_reference<T>::type&& move(T&& arg) {
+    return static_cast<typename remove_reference<T>::type&&>(arg);
+  }
+  ```
+
+- Transferring `std::unique_ptr` 
+
+  ```cpp
+  std::unique_ptr<int> p1 {new int{0}};  // in practice, use std::make_unique
+  std::unique_ptr<int> p2 = p1; // error -- cannot copy unique pointers
+  std::unique_ptr<int> p3 = std::move(p1); // move `p1` into `p3`
+                                           // now unsafe to dereference object held by `p1`
+  ```
+
+###### std::forward
+
+- Returns the arguments passed to it while maintaining their *value category* and *cv-qualifiers*. 
+
+- Excellent for generic code and factories. Used in conjunction with *forwarding references*.
+
+- Definition:
+
+  ```cpp
+  // This is a clever function that takes various args and applies reference collapsing depending if 
+  // an l-value or r-value has been passed in.
+  template <typename T> T&& forward(typename remove_reference<T>::type& arg) {
+    return static_cast<T&&>(arg);
+  }
+  ```
+
+#### **C++14**
+
+#### C++17
 
 - **Structured bindings**
-
-  - https://stackoverflow.com/questions/62871344/using-structured-binding-declaration-in-range-based-for-loop
+- https://stackoverflow.com/questions/62871344/using-structured-binding-declaration-in-range-based-for-loop
 
 
   - https://en.cppreference.com/w/cpp/language/structured_binding
@@ -2266,9 +2735,13 @@ for (int n = 0; n < 5; ++n) {
 
   - [Why not use no discard everywhere](https://softwareengineering.stackexchange.com/questions/363169/whats-the-reason-for-not-using-c17s-nodiscard-almost-everywhere-in-new-c)
 
-### C++20
+#### C++20
 
-### C++23
+##### C++ 20 New Library Features
+
+- [Spaceship operator](https://devblogs.microsoft.com/cppblog/simplify-your-code-with-rocket-science-c20s-spaceship-operator/)
+
+#### C++23
 
 ### Performant C++
 
@@ -2277,6 +2750,8 @@ for (int n = 0; n < 5; ++n) {
 ##### cppcon
 
 - [Back 2 Basics Templates watch both parts](https://www.youtube.com/watch?v=XN319NYEOcE)
+
+**Concepts**
 
 ##### Misc reminders
 
@@ -2399,8 +2874,73 @@ struct has_foo<T, void_t<decltype(std::declval<T&>().foo())>> : std::true_type {
 
 ### Graphics
 
-### Architecture
+### Architecture / API design / Design Patterns
 
-##### Misc reminders
+**Data oriented design**
 
 - [Data oriented design summary](https://www.reddit.com/r/C_Programming/comments/j90okg/what_is_data_oriented_programming/)
+  **General terms**
+
+- Decoupling
+
+**API design**
+
+##### Dependency inversion
+
+##### Dependency Injection
+
+##### Inversion of Control
+
+##### Design patterns
+
+- Observer
+
+-  Proxy
+
+-  Factory
+
+-  Singleton
+
+##### **SOLID**
+
+##### **C++ Specific**
+
+- [[C++ detail namespace vs anonymous vs private method to class vs. pimpl vs. friend class](https://stackoverflow.com/questions/45091808/c-detail-namespace-vs-anonymous-vs-private-method-to-class-vs-pimpl-vs-friend)]([C++ detail namespace vs anonymous vs private method to class vs. pimpl vs. friend class](https://stackoverflow.com/questions/45091808/c-detail-namespace-vs-anonymous-vs-private-method-to-class-vs-pimpl-vs-frien)
+- [detail namespace](https://www.reddit.com/r/cpp/comments/3cryhl/correct_way_to_use_namespace_detail/)
+
+###### [Pimpl](https://en.wikibooks.org/wiki/C%2B%2B_Programming/Idioms#Pointer_To_Implementation_(pImpl))
+
+- Pointer to implementation file  (pimpl) is an idiom that is used to seperate the implemenation from an interface.
+- The Benefits of this are:
+  - The code that depends on the interface no longer requires recompilation when the implementation file (or its dependencies) are modified.
+- It works via using an opaque pointer to the implementation of the class, which must be forward declared in the class itself.
+- The implementation itself is hidden in a shared library normally which includes all the dependencies required and provides definitions so the linker is happy.
+
+```cpp
+// --------------------
+// interface (widget.h)
+struct widget
+{
+    // public members
+private:
+    struct impl; // forward declaration of the implementation class
+    std::unique_ptr<impl> pimpl_; // Declare the opaque pointer member variable.
+};
+ 
+// ---------------------------
+// implementation (widget.cpp)
+
+#include "dependency.h"
+
+struct widget::impl
+{
+    // implementation details
+    
+    Dependency dep_; // Users do not need to know about this variable to use our interface correctly, its "behind the scenes" or "private" logical 
+};
+```
+
+- CRTP - Consider replacing with concepts.
+- Ranges
+- Type erasure
+- RAII
