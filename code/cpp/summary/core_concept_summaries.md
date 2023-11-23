@@ -2876,6 +2876,8 @@ struct has_foo<T, void_t<decltype(std::declval<T&>().foo())>> : std::true_type {
 
 ### Architecture / API design / Design Patterns
 
+- [value vs reference semantics](https://hackingcpp.com/cs/value_vs_reference_semantics.html)
+
 **Data oriented design**
 
 - [Data oriented design summary](https://www.reddit.com/r/C_Programming/comments/j90okg/what_is_data_oriented_programming/)
@@ -2944,3 +2946,22 @@ struct widget::impl
 - Ranges
 - Type erasure
 - RAII
+
+### Tooling
+
+#### CMake
+
+```cmake
+add_executable()
+target_include_directories()
+target_link_libraries()
+message()
+include_directories()
+find_package()
+project()
+cmake_minimum_required()
+set()
+```
+
+
+
