@@ -116,7 +116,7 @@ extern int k = 42 // definition
 - Compiling encompasses this entire process (building is the better term)
 - Also separate into **compiling** (preprocess, analysis , code generation) and **linking**
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822195559130.png)
+![image](../../../images/image-20220822195559130.png)
 
 - Linker takes compiled cpp files in form of object files to create the executable.
 
@@ -132,7 +132,7 @@ extern int k = 42 // definition
 - Output of pre-processor is a **translation unit**
   - Concept that the standard uses for *descriptive purposes*.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822200348249.png)
+![image](./images/image-20220822200348249.png)
 
 - Pre-processor need not generate the **translation unit as a file**, very rare.
 
@@ -179,7 +179,7 @@ https://stackoverflow.com/questions/3045603/what-does-an-object-file-contain - w
   1. Object files
   2. Libraries of previously compiled object files.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822205309088.png)
+![image](./images/image-20220822205309088.png)
 
 - Handles *relocation* of values and code too.
 
@@ -187,11 +187,11 @@ https://stackoverflow.com/questions/3045603/what-does-an-object-file-contain - w
 
 - Every entity a program **uses** must be **defined** in that program
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822205553057.png)
+![image](./images/image-20220822205553057.png)
 
 - Linker matches **each external reference** with the **corresponding definition**.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822205824344.png)
+![image](./images/image-20220822205824344.png)
 
 - external reference defined in another object file is located by the linker and used as the definition.
 - If there are no definitions found then it becomes an **undefined reference**.
@@ -200,7 +200,7 @@ https://stackoverflow.com/questions/3045603/what-does-an-object-file-contain - w
 
 - Linker can find **more than one matching definition**
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822210156851.png)
+![image](./images/image-20220822210156851.png)
 
 - Returns a **multiple defined error**.
 
@@ -219,7 +219,7 @@ https://stackoverflow.com/questions/3045603/what-does-an-object-file-contain - w
 
 - This is just a **part of the ODR**:
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822210535029.png)
+![image](./images/image-20220822210535029.png)
 
 ### Header Entities and the ODR
 
@@ -256,13 +256,13 @@ https://stackoverflow.com/questions/3045603/what-does-an-object-file-contain - w
 
 - We define templates **in header files**
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822212629593.png)
+![image](./images/image-20220822212629593.png)
 
 ### Explicit template specialization
 
 - Treat these like **non inline entities**.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822213409956.png)
+![image](./images/image-20220822213409956.png)
 
 - Function templates are **not functions**
   - Its just a **recipe** for **generation of functions**.
@@ -291,7 +291,7 @@ https://stackoverflow.com/questions/3045603/what-does-an-object-file-contain - w
 - template declaration for code generation purposes.
 - Other files now assume existence of template definition 
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220823011809197.png)
+![image](./images/image-20220823011809197.png)
 
 - explicitly instantiated template is a **single entity**
   - Not a *recipe for generating entities*.
@@ -307,12 +307,12 @@ https://stackoverflow.com/questions/3045603/what-does-an-object-file-contain - w
 
 - Code generators and linkers separate entities to **different program sections**
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822233623670.png)
+![image](./images/image-20220822233623670.png)
 
 - The **linker** is *often responsible* for *arranging* these **sections** in **memory**.
 - This arrangement is the **program** *memory map*.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220822234725892.png)
+![image](./images/image-20220822234725892.png)
 
 ---
 
@@ -327,7 +327,7 @@ https://stackoverflow.com/questions/3045603/what-does-an-object-file-contain - w
 
 
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220823005739055.png)
+![image](./images/image-20220823005739055.png)
 
 - Works fine for **entities** defined in the source file.
   - Non inline, non template function

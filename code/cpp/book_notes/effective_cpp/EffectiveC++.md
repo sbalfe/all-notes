@@ -1028,7 +1028,7 @@ private:
 
 ## Item 23 - Prefer non member non friend functions to member functions
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220325190745049.png)
+![image](../../.././images/image-20220325190745049.png)
 
 - Imagine you have following class
 
@@ -1835,7 +1835,7 @@ inline const T& std::max(constT& a const T& b){ // explicit inline, request std:
 >
 >   - ```c++
 >    #include "datefwd.h" // header file declaring (but not defining) class Date
->                                             
+>                                                 
 >     Date today(); // as before.
 >      void clearAppointments(Date d);
 >     ```
@@ -2255,6 +2255,7 @@ D *pD = &x;
 
 - Public inheritance in c++ is *an is-a* therefore can implicit convert derived to base.
 
-![image](https://github.com/sbalfe/all-notes/blob/master/images/image-20220728195115735.png)
+![image](../../../../images/image-20220728195115735.png)
 
 - in private inheritance, compilers do **not perform implicit conversions**.
+

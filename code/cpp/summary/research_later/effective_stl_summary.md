@@ -1,0 +1,1 @@
+https://grant6899.github.io/2017/11/21/Effective-STL-Notes/
